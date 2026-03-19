@@ -264,6 +264,23 @@
   #submit-status.error   { background: rgba(250,109,109,0.12); border: 1px solid rgba(250,109,109,0.3); color: #fa6d6d; }
   #submit-status.loading { background: rgba(124,109,250,0.10); border: 1px solid rgba(124,109,250,0.3); color: var(--accent); }
 
+  /* REFLECTION TOGGLE */
+  .reflection-header { display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+  .optional-badge {
+    font-size:11px; padding:3px 10px; border-radius:20px; font-weight:600;
+    background: rgba(124,109,250,0.15); color:var(--accent);
+    border:1px solid rgba(124,109,250,0.3); letter-spacing:1px; text-transform:uppercase;
+    vertical-align:middle;
+  }
+  .btn-toggle-reflect {
+    background: var(--surface2); border:1px solid var(--border);
+    border-radius:10px; padding:10px 18px; cursor:pointer;
+    font-family:Arial,sans-serif; font-size:13px; font-weight:600;
+    color:var(--muted); transition:all .2s; white-space:nowrap; flex-shrink:0;
+  }
+  .btn-toggle-reflect:hover { border-color:var(--accent); color:var(--accent); }
+  .btn-toggle-reflect.open { border-color:var(--accent); color:var(--accent); background:rgba(124,109,250,0.1); }
+
   @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 </style>
 </head>
@@ -329,9 +346,14 @@
     <div class="score-grid" id="score-grid"></div>
     <div class="gap-section"><h3>&#128208; Gap Analysis</h3><div id="gap-items"></div></div>
     <div class="reflection-section">
-      <h3>&#128172; Manager Conversation Starter</h3>
-      <div class="r-sub">Use these prompts to prepare for your next 1-on-1. Your answers are for your own reflection.</div>
-      <div id="reflection-prompts"></div>
+      <div class="reflection-header">
+        <div style="flex:1;">
+          <h3 style="display:flex;align-items:center;gap:10px;">&#128172; Manager Conversation Starter <span class="optional-badge">Optional</span></h3>
+          <div class="r-sub" style="margin-top:6px;">Use these prompts to prepare for your next 1-on-1. Your answers are for your own reflection and are not submitted to the team tracker.</div>
+        </div>
+        <button class="btn-toggle-reflect" id="btn-toggle-reflect" onclick="toggleReflection()">&#8964; Show prompts</button>
+      </div>
+      <div id="reflection-prompts" style="display:none;margin-top:20px;"></div>
     </div>
     <!-- SUBMIT TO SHEETS -->
     <div class="submit-section">
@@ -754,6 +776,15 @@ function showStatus(type, msg) {
   el.innerHTML = msg;
 }
 
+
+function toggleReflection() {
+  var panel = document.getElementById('reflection-prompts');
+  var btn = document.getElementById('btn-toggle-reflect');
+  var isHidden = panel.style.display === 'none';
+  panel.style.display = isHidden ? 'block' : 'none';
+  btn.innerHTML = isHidden ? '&#8963; Hide prompts' : '&#8964; Show prompts';
+  btn.classList.toggle('open', isHidden);
+}
 
 function resetAssessment() {
   answers = {}; currentDim = 0;
