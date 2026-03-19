@@ -707,7 +707,7 @@ function renderRadar(scores, targets) {
 var APPS_SCRIPT_URL = 'https://script.google.com/a/macros/beyondinsights.net/s/AKfycbwaCQ6SUoCbQpE9P650HHUFMUa3X-L4tYjibyhBDvLNAEesRIks0_kESrzbAoixeHvhUg/exec';
 
 function submitToSheets() {
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'https://script.google.com/a/macros/beyondinsights.net/s/AKfycbwaCQ6SUoCbQpE9P650HHUFMUa3X-L4tYjibyhBDvLNAEesRIks0_kESrzbAoixeHvhUg/exec') {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
     showStatus('error', '&#9888; No Apps Script URL configured yet. Follow the setup guide to connect Google Sheets.');
     return;
   }
@@ -755,6 +755,7 @@ function showStatus(type, msg) {
 }
 
 
+function resetAssessment() {
   answers = {}; currentDim = 0;
   if (radarChartInstance) { radarChartInstance.destroy(); radarChartInstance = null; }
   document.getElementById('results-section').style.display = 'none';
