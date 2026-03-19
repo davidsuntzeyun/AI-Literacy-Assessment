@@ -255,6 +255,14 @@
   .name-input:focus { border-color: var(--accent); }
   .name-input::placeholder { color: var(--muted); }
 
+  /* SPINNER */
+  .spinner {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 3px solid var(--border); border-top-color: var(--accent);
+    animation: spin .7s linear infinite; flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   /* SUBMIT TO SHEETS */
   .submit-section {
     background: var(--surface); border: 1px solid var(--accent);
@@ -368,14 +376,12 @@
     <!-- SUBMIT TO SHEETS -->
     <div class="submit-section">
       <div class="submit-inner">
-        <div class="submit-icon">&#128202;</div>
+        <div class="submit-icon" id="submit-icon">&#128202;</div>
         <div class="submit-text">
-          <div class="submit-title">Save to Google Sheets</div>
-          <div class="submit-sub">Submit your results to the team tracker so your manager can review your profile.</div>
+          <div class="submit-title" id="submit-title">Saving to team tracker...</div>
+          <div class="submit-sub" id="submit-sub">Your results are being sent to Google Sheets.</div>
         </div>
-        <button class="btn btn-sheets btn-big" id="submit-btn" onclick="submitToSheets()">
-          &#128228; Submit Results
-        </button>
+        <div id="submit-spinner" class="spinner"></div>
       </div>
       <div id="submit-status" style="display:none;"></div>
     </div>
@@ -694,6 +700,7 @@ function showResults() {
   }).join('');
 
   setTimeout(function(){ renderRadar(scores, targets); }, 200);
+  setTimeout(function(){ submitToSheets(); }, 600);
   window.scrollTo({ top:0, behavior:'smooth' });
 }
 
@@ -740,7 +747,7 @@ var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaCQ6SUoCbQpE9P6
 
 function submitToSheets() {
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
-    showStatus('error', '&#9888; No Apps Script URL configured yet. Follow the setup guide to connect Google Sheets.');
+    setSubmitCard('error', '&#9888;', 'Not connected', 'No Apps Script URL configured. Contact your administrator.');
     return;
   }
 
@@ -757,10 +764,8 @@ function submitToSheets() {
     payload[d.title + ' Gap'] = gap >= 2 ? 'Priority Gap' : gap === 1 ? 'Moderate Gap' : 'On Track';
   });
 
-  var btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.innerHTML = '&#8987; Submitting...';
-  showStatus('loading', '&#128228; Sending your results to Google Sheets...');
+  // Show loading state
+  setSubmitCard('loading', '&#128202;', 'Saving to team tracker...', 'Sending your results to Google Sheets.');
 
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
@@ -769,14 +774,24 @@ function submitToSheets() {
     body: JSON.stringify(payload)
   })
   .then(function() {
-    btn.innerHTML = '&#10003; Submitted!';
-    showStatus('success', '&#10003; Your results have been saved to the team tracker. Your manager will be able to review your profile.');
+    setSubmitCard('success', '&#10003;', 'Results saved!', 'Your results have been sent to the team tracker. Your manager will be able to review your profile.');
   })
   .catch(function(err) {
-    btn.disabled = false;
-    btn.innerHTML = '&#128228; Submit Results';
-    showStatus('error', '&#10060; Something went wrong. Please try again or contact your administrator. (' + err.message + ')');
+    setSubmitCard('error', '&#10060;', 'Could not save results', 'Something went wrong: ' + err.message + '. Please contact your administrator.');
   });
+}
+
+function setSubmitCard(type, icon, title, sub) {
+  var colors = { loading: 'var(--accent)', success: 'var(--accent3)', error: '#fa6d6d' };
+  document.getElementById('submit-icon').innerHTML = icon;
+  document.getElementById('submit-icon').style.color = colors[type] || 'var(--muted)';
+  document.getElementById('submit-title').textContent = title;
+  document.getElementById('submit-title').style.color = colors[type] || 'var(--text)';
+  document.getElementById('submit-sub').textContent = sub;
+  var spinner = document.getElementById('submit-spinner');
+  spinner.style.display = type === 'loading' ? 'block' : 'none';
+  var section = spinner.closest('.submit-section');
+  section.style.borderColor = colors[type] || 'var(--accent)';
 }
 
 function showStatus(type, msg) {
