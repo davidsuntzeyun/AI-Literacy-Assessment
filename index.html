@@ -50,6 +50,15 @@
   }
   .wrapper { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
 
+  /* VERSION BADGE */
+  .version-badge {
+    position: fixed; top: 20px; left: 20px; z-index: 100;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 40px; padding: 7px 14px;
+    font-family: Arial, sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--muted); box-shadow: var(--shadow); letter-spacing: 1px;
+  }
+
   /* THEME TOGGLE */
   .theme-toggle {
     position: fixed; top: 20px; right: 20px; z-index: 100;
@@ -286,6 +295,7 @@
 </head>
 <body>
 
+<div class="version-badge">v1.0</div>
 <button class="theme-toggle" onclick="toggleTheme()">
   <span class="theme-icon" id="theme-icon">&#9728;&#65039;</span>
   <span id="theme-label">Light Mode</span>
